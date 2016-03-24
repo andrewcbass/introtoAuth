@@ -5,9 +5,33 @@
     <link rel='stylesheet' href='/css/style.css' />
     <script src="/bower_components/angular/angular.min.js" charset="utf-8"></script>
     <script src="/js/module.js" charset="utf-8"></script>
+    <script src="/js/controllers.js" charset="utf-8"></script>
+    <script src="/js/services.js" charset="utf-8"></script>
   </head>
   <body ng-app="userAuth">
     <h1><%= title %></h1>
     <p>Welcome to <%= title %></p>
+
+    <form name="registrationForm" ng-controller="registerCtrl" novalidate ng-submit="register(regUser)">
+      <h3>Register: </h3>
+      <div>
+        <input type="text" ng-model="regUser.username" required>
+      </div>
+      <div>
+        <input type="password" ng-model="regUser.password" required>
+      </div>
+    <button>Register!!!</button>
+    </form>
+
+    <form name="loginForm" ng-controller="loginCtrl" novalidate ng-submit="login(loginUser)">
+      <h3>Register: </h3>
+      <div>
+        <input type="text" ng-model="loginUser.username" required>
+      </div>
+      <div>
+        <input type="password" ng-model="loginUser.password" required>
+      </div>
+    <button>Login!!!</button>
+    </form>
   </body>
 </html>

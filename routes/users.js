@@ -11,8 +11,12 @@ router.get('/', function(req, res) {
 
 router.post("/authenticate", function(req, res) {
   //User.authentication(userObj, cb)
-  User.authenticate(req.body, function(err, user) {
-      res.status(err ? 400 : 200).send(err || user);
+  User.authenticate(req.body, function(err, token) {
+      if(err) {
+        res.status(400).send(err);
+      } else {
+        res.cookie("cadecookie", token).send();
+      }
   });
 });
 

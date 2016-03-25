@@ -2,6 +2,9 @@
 
 var mongoose = require("mongoose");
 var bcrypt = require("bcryptjs");
+var jwt = require("jwt-simple");
+
+const JWT_SECRET = "this is my secret: I don't like the taste of corn!"
 
 var User;
 
@@ -16,6 +19,28 @@ var userSchema = new mongoose.Schema({
     required: true
   }
 });
+
+userSchema.statics.authMiddleware = function(req, res, next) {
+  // check token,
+  // if valid, and user exists, call next()
+  // else, respond with 401
+
+  var token = req.cookies.cadecookie;
+  try {
+    var payload = jwt.decode(token, JWT_SECRET);
+  } catch(err) {
+    return res.clearCookie("cadecookie").status(401).send();
+  }
+
+  User.findById(payload.userId, function(err, user) {
+    if(err || !user) {
+      return res.status(401).send(err);
+    }
+    // the user does exist
+    req.user = user; //allows us to use req.user on other end (the route)
+    next(); //everything is good, continue with request.
+  });
+};
 
 //creating a new method called "register"
 userSchema.statics.register = function(userObj, cb) {
@@ -53,7 +78,16 @@ userSchema.statics.authenticate = function(userLogIn, cb) {
       return cb(err || "Authentication failed, rookie!");
     }
     if(res) {
-      cb(null, userDB);
+
+      //username and password are valid
+      //userDB is the user logging in
+      var payload = {
+        userId: userDB._id,
+        iat: Date.now() //issued at time
+      };
+      //generate token
+      var token = jwt.encode(payload, JWT_SECRET);
+      cb(null, token);
     }
   });
 });
